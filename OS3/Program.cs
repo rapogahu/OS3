@@ -1,6 +1,7 @@
 ﻿class Consumer
 {
-    Thread thread;
+    public Thread thread;
+    public bool isSleeping = false;
 
     public Consumer()
     {
@@ -14,6 +15,18 @@
         {
             lock (Program.itemQueue)
             {
+                if (isSleeping == true)
+                {
+                    try
+                    {
+                        Thread.Sleep(1000000);
+                        goto Consuming;
+                    }
+                    catch
+                    {
+                        goto Consuming;
+                    }
+                }
                 if (Program.itemQueue.Count == 0)
                 {
                     goto Consuming;
@@ -21,6 +34,14 @@
                 else
                 {
                     Program.itemQueue.Dequeue();
+                    try
+                    {
+                        Thread.Sleep(200);
+                    }
+                    catch
+                    {
+                        return;
+                    }
                     goto Consuming;
                 }
             }
@@ -30,7 +51,8 @@
 
 class Producer
 {
-    Thread thread;
+    public Thread thread;
+    public bool isSleeping = false;
 
     public Producer()
     {
@@ -43,7 +65,19 @@ class Producer
         {
             lock (Program.itemQueue)
             {
-                if (Program.itemQueue.Count >= 100)
+                if (isSleeping == true)
+                {
+                    try
+                    {
+                        Thread.Sleep(1000000);
+                        goto Producing;
+                    }
+                    catch
+                    {
+                        goto Producing;
+                    }
+                }
+                if (Program.itemQueue.Count >= 100 && Program.itemQueue.Count <= 200)
                 {
                     goto Producing;
                 }
@@ -53,6 +87,14 @@ class Producer
                     int s = rnd.Next(0, 100);
 
                     Program.itemQueue.Enqueue(s);
+                    try
+                    {
+                        Thread.Sleep(200);
+                    }
+                    catch
+                    {
+                        return;
+                    }
                     goto Producing;
                 }
             }
@@ -69,6 +111,14 @@ class Program
         {
             lock (itemQueue)
             {
+                try
+                {
+                    Thread.Sleep(50);
+                }
+                catch
+                {
+                    return;
+                }
                 Console.Clear();
                 foreach (int i in itemQueue)
                 {
@@ -77,7 +127,6 @@ class Program
                 Console.WriteLine();
                 Console.WriteLine("\n\n q - остановить производителей");
             }
-            Thread.Sleep(500);
             goto Printing;
         }
     }
@@ -99,7 +148,20 @@ class Program
             ConsoleKey key = Console.ReadKey().Key;
             if (key == ConsoleKey.Q)
             {
-                Environment.Exit(0);
+                lock (itemQueue)
+                {
+                    while (itemQueue.Count != 0)
+                    {
+                        Console.Clear();
+                        itemQueue.Dequeue();
+                        foreach (int n in itemQueue)
+                        {
+                            Console.Write(n + " ");
+                        }
+                        Thread.Sleep(100);
+                        if (itemQueue.Count == 0) Environment.Exit(0);
+                    }
+                }
             }
         }
     }
