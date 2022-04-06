@@ -1,7 +1,6 @@
 ﻿class Consumer
 {
     public Thread thread;
-    public bool isSleeping = false;
 
     public Consumer()
     {
@@ -15,18 +14,6 @@
         {
             lock (Program.itemQueue)
             {
-                if (isSleeping == true)
-                {
-                    try
-                    {
-                        Thread.Sleep(1000000);
-                        goto Consuming;
-                    }
-                    catch
-                    {
-                        goto Consuming;
-                    }
-                }
                 if (Program.itemQueue.Count == 0)
                 {
                     goto Consuming;
@@ -52,7 +39,6 @@
 class Producer
 {
     public Thread thread;
-    public bool isSleeping = false;
 
     public Producer()
     {
@@ -65,18 +51,6 @@ class Producer
         {
             lock (Program.itemQueue)
             {
-                if (isSleeping == true)
-                {
-                    try
-                    {
-                        Thread.Sleep(1000000);
-                        goto Producing;
-                    }
-                    catch
-                    {
-                        goto Producing;
-                    }
-                }
                 if (Program.itemQueue.Count >= 100 && Program.itemQueue.Count <= 200)
                 {
                     goto Producing;
@@ -111,14 +85,7 @@ class Program
         {
             lock (itemQueue)
             {
-                try
-                {
-                    Thread.Sleep(50);
-                }
-                catch
-                {
-                    return;
-                }
+                Thread.Sleep(50);
                 Console.Clear();
                 foreach (int i in itemQueue)
                 {
