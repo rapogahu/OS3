@@ -1,4 +1,5 @@
 # OS Task №3
+Conveyor simulation program
 ## Short decription
 Develop a program that simulates the operation of a warehouse (conveyor).
 
