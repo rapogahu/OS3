@@ -152,13 +152,17 @@ class Program
                 {
                     while (itemQueue.Count != 0)
                     {
+                        Thread.Sleep(1000);
+
                         Console.Clear();
+
                         itemQueue.Dequeue();
+
                         foreach (int n in itemQueue)
                         {
                             Console.Write(n + " ");
                         }
-                        Thread.Sleep(100);
+                        Console.WriteLine("\n\n Wait, program ends . . .");
                         if (itemQueue.Count == 0) Environment.Exit(0);
                     }
                 }
